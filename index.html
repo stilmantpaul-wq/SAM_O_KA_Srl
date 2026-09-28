@@ -1,0 +1,2188 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SAM-O-KA Srl — Prise de commande</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#16232B">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="SAM-O-KA Srl">
+<style>
+  :root{
+    --ink:#16232B;
+    --ink-soft:#4A5960;
+    --paper:#F6F7F5;
+    --card:#FFFFFF;
+    --line:#E1E5E2;
+    --moss:#72B01D;
+    --moss-dark:#588A12;
+    --amber:#C97B2E;
+    --amber-soft:#F6E6D3;
+    --danger:#B3492F;
+    --radius:10px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    padding-bottom:90px;
+  }
+  header.topbar{
+    background:linear-gradient(135deg, var(--ink) 0%, #223640 100%);
+    color:#fff;
+    padding:16px 16px 14px;
+    position:sticky;
+    top:0;
+    z-index:20;
+    display:flex;
+    align-items:center;
+    gap:12px;
+  }
+  .logo-mark{
+    width:auto; height:42px;
+    padding:0 12px;
+    border-radius:9px;
+    background:var(--moss);
+    color:#fff;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:700;
+    font-size:.85rem;
+    letter-spacing:.2px;
+    text-align:center;
+    white-space:nowrap;
+    flex-shrink:0;
+    box-shadow:0 2px 6px rgba(0,0,0,.25);
+  }
+  header.topbar h1{
+    margin:0;
+    font-size:1.1rem;
+    font-weight:700;
+    letter-spacing:.2px;
+  }
+  header.topbar .sub{
+    font-size:.72rem;
+    color:#AEC0C4;
+    margin-top:1px;
+    letter-spacing:.2px;
+  }
+  .lock-btn{
+    background:rgba(255,255,255,.12);
+    border:1px solid rgba(255,255,255,.25);
+    color:#fff;
+    border-radius:8px;
+    padding:8px 12px;
+    font-size:.78rem;
+    font-weight:700;
+    cursor:pointer;
+    flex-shrink:0;
+  }
+  .login-gate{
+    position:fixed;
+    inset:0;
+    background:linear-gradient(135deg, var(--ink) 0%, #223640 100%);
+    z-index:100;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+  }
+  .login-box{
+    background:#fff;
+    border-radius:14px;
+    padding:24px 20px;
+    max-width:320px;
+    width:100%;
+    box-shadow:0 12px 32px rgba(0,0,0,.3);
+  }
+  .login-box h2{
+    text-align:center;
+    font-size:1.05rem;
+    margin:0 0 4px;
+  }
+  .login-box input{
+    margin:16px 0 6px;
+    text-align:center;
+    font-size:1.3rem;
+    letter-spacing:4px;
+    padding:12px;
+  }
+  .login-error{
+    color:var(--danger);
+    font-size:.78rem;
+    text-align:center;
+    margin-bottom:10px;
+    font-weight:600;
+  }
+  .login-contact{
+    text-align:center;
+    font-size:.72rem;
+    color:var(--ink-soft);
+    margin-top:14px;
+    line-height:1.5;
+  }
+  nav.tabs{
+    display:flex;
+    gap:4px;
+    background:#fff;
+    border-bottom:1px solid var(--line);
+    position:sticky;
+    top:64px;
+    z-index:19;
+    overflow-x:auto;
+  }
+  nav.tabs button{
+    flex:1;
+    min-width:70px;
+    border:none;
+    background:none;
+    padding:12px 4px;
+    font-size:.72rem;
+    font-weight:600;
+    color:var(--ink-soft);
+    border-bottom:3px solid transparent;
+    cursor:pointer;
+    white-space:nowrap;
+  }
+  nav.tabs button.active{
+    color:var(--moss-dark);
+    border-bottom-color:var(--moss);
+  }
+  main{
+    padding:14px 14px 20px;
+    max-width:720px;
+    margin:0 auto;
+  }
+  .view{display:none;}
+  .view.active{display:block;}
+  .card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:14px;
+    margin-bottom:12px;
+    box-shadow:0 1px 3px rgba(22,35,43,.05);
+  }
+  .card h2{
+    margin:0 0 10px;
+    font-size:.95rem;
+    font-weight:700;
+    letter-spacing:.1px;
+  }
+  label{
+    display:block;
+    font-size:.72rem;
+    font-weight:600;
+    color:var(--ink-soft);
+    margin:8px 0 4px;
+  }
+  input[type=text], input[type=number], input[type=tel], select, textarea{
+    width:100%;
+    padding:9px 10px;
+    border:1px solid var(--line);
+    border-radius:8px;
+    font-size:.9rem;
+    background:#fff;
+    color:var(--ink);
+  }
+  textarea{resize:vertical; min-height:50px;}
+  .row{display:flex; gap:8px;}
+  .row > *{flex:1;}
+  button.btn{
+    border:none;
+    border-radius:8px;
+    padding:10px 14px;
+    font-weight:700;
+    font-size:.85rem;
+    cursor:pointer;
+    transition:background .15s, opacity .15s, transform .1s;
+  }
+  button.btn:active{transform:scale(.98);}
+  .btn-primary{background:var(--moss); color:#fff;}
+  .btn-primary:active{background:var(--moss-dark);}
+  .btn-outline{background:#fff; border:1px solid var(--line); color:var(--ink);}
+  .btn-danger{background:none; color:var(--danger); border:1px solid #E3C9C0;}
+  .btn-amber{background:var(--amber); color:#fff;}
+  .btn-dark{background:var(--ink); color:#fff;}
+  .btn-full{width:100%; margin-top:10px;}
+  .list-item{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:10px 0;
+    border-bottom:1px solid var(--line);
+    gap:10px;
+  }
+  .list-item:last-child{border-bottom:none;}
+  .list-item .meta{font-size:.72rem; color:var(--ink-soft); margin-top:2px;}
+  .list-item .name{font-weight:600; font-size:.88rem;}
+  .tag{
+    display:inline-block;
+    font-size:.65rem;
+    font-weight:700;
+    padding:2px 7px;
+    border-radius:20px;
+    background:var(--amber-soft);
+    color:#8A551D;
+    margin-left:6px;
+  }
+  .tag.global{background:#EBF5DF; color:var(--moss-dark);}
+  .icon-btn{
+    border:none;
+    background:none;
+    font-size:1rem;
+    padding:4px 6px;
+    cursor:pointer;
+    color:var(--ink-soft);
+  }
+  .empty{
+    text-align:center;
+    padding:30px 10px;
+    color:var(--ink-soft);
+    font-size:.85rem;
+  }
+  .qty-control{
+    display:flex;
+    align-items:center;
+    gap:6px;
+  }
+  .qty-control button{
+    width:30px; height:30px;
+    border-radius:6px;
+    border:1px solid var(--line);
+    background:#fff;
+    font-size:1rem;
+    font-weight:700;
+    cursor:pointer;
+    color:var(--ink);
+  }
+  .qty-control input{
+    width:44px;
+    text-align:center;
+    padding:6px 2px;
+  }
+  .product-row{
+    padding:10px 0;
+    border-bottom:1px solid var(--line);
+  }
+  .product-row:last-child{border-bottom:none;}
+  .product-row .top{
+    display:flex;
+    gap:10px;
+    align-items:center;
+    margin-bottom:8px;
+  }
+  .product-row .price{
+    font-size:.76rem;
+    color:var(--ink-soft);
+    margin-top:2px;
+  }
+  .search-box{margin-bottom:8px;}
+  .cart-bar{
+    position:fixed;
+    left:0; right:0; bottom:0;
+    background:var(--ink);
+    color:#fff;
+    padding:12px 16px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    z-index:30;
+    box-shadow:0 -3px 10px rgba(0,0,0,.15);
+  }
+  .cart-bar .info .count{font-size:.68rem; color:#B9C4C7;}
+  .cart-bar .info .total{font-size:1.05rem; font-weight:700;}
+  .cart-bar button{
+    background:var(--moss);
+    color:#fff;
+    border:none;
+    border-radius:8px;
+    padding:10px 16px;
+    font-weight:700;
+    font-size:.85rem;
+  }
+  .cart-bar button:disabled{background:#4A5960; opacity:.6;}
+  .order-summary{
+    border:1px dashed var(--line);
+    border-radius:8px;
+    padding:10px;
+    background:#FAFBF9;
+    font-size:.82rem;
+  }
+  .order-summary .line{
+    display:flex;
+    justify-content:space-between;
+    padding:3px 0;
+  }
+  .order-summary .total-line{
+    border-top:1px solid var(--line);
+    margin-top:6px;
+    padding-top:6px;
+    font-weight:700;
+  }
+  select.client-picker{
+    font-size:.95rem;
+    font-weight:700;
+    padding:10px;
+  }
+  .locked-client-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    background:#FAFBF9;
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:10px 12px;
+  }
+  .locked-client-name{
+    font-weight:700;
+    font-size:.95rem;
+    color:var(--ink);
+  }
+  .hist-order{
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:10px 12px;
+    margin-bottom:8px;
+  }
+  .hist-order .head{
+    display:flex;
+    justify-content:space-between;
+    cursor:pointer;
+  }
+  .hist-order .head .date{font-weight:700; font-size:.85rem;}
+  .hist-order .head .amt{font-weight:700; color:var(--moss-dark);}
+  .hist-order .details{
+    display:none;
+    margin-top:8px;
+    padding-top:8px;
+    border-top:1px solid var(--line);
+    font-size:.8rem;
+  }
+  .hist-order.open .details{display:block;}
+  .edit-item-row{
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:10px;
+    margin-bottom:8px;
+  }
+  .edit-item-name{font-weight:700; font-size:.85rem; margin-bottom:6px;}
+  .toast{
+    position:fixed;
+    top:70px;
+    left:50%;
+    transform:translateX(-50%);
+    background:var(--moss-dark);
+    color:#fff;
+    padding:9px 16px;
+    border-radius:20px;
+    font-size:.8rem;
+    font-weight:600;
+    z-index:50;
+    opacity:0;
+    transition:opacity .25s;
+    pointer-events:none;
+  }
+  .toast.show{opacity:1;}
+  .confirm-overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(22,35,43,.5);
+    z-index:60;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+  }
+  .confirm-box{
+    background:#fff;
+    border-radius:12px;
+    padding:18px;
+    max-width:320px;
+    width:100%;
+    box-shadow:0 8px 24px rgba(0,0,0,.25);
+  }
+  .confirm-message{
+    font-size:.88rem;
+    color:var(--ink);
+    margin-bottom:16px;
+    line-height:1.4;
+  }
+  .btn-danger-solid{background:var(--danger); color:#fff;}
+  .helper{font-size:.72rem; color:var(--ink-soft); margin-top:-4px; margin-bottom:8px;}
+  .loading{text-align:center; padding:20px; color:var(--ink-soft); font-size:.82rem;}
+  .prod-thumb{
+    width:44px; height:44px;
+    border-radius:8px;
+    object-fit:cover;
+    background:var(--line);
+    flex-shrink:0;
+  }
+  .photo-upload-row{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin-bottom:4px;
+  }
+  .photo-preview{
+    width:64px; height:64px;
+    border-radius:8px;
+    object-fit:cover;
+    border:1px solid var(--line);
+  }
+  .photo-placeholder{
+    width:64px; height:64px;
+    border-radius:8px;
+    border:1px dashed var(--line);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:1.3rem;
+    color:var(--ink-soft);
+    background:#FAFBF9;
+    flex-shrink:0;
+  }
+  input[type=file]{
+    width:100%;
+    font-size:.8rem;
+  }
+  #printArea{display:none;}
+  .doc-page{
+    background:#fff;
+    padding:6px;
+  }
+  .doc-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    border-bottom:2px solid var(--ink);
+    padding-bottom:14px;
+    margin-bottom:16px;
+  }
+  .doc-header .doc-logo{
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .doc-header .doc-logo .mark{
+    width:auto; height:44px;
+    padding:0 8px;
+    border-radius:9px;
+    background:var(--moss);
+    color:#fff;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:700;
+    font-size:.65rem;
+    text-align:center;
+  }
+  .doc-header .doc-company b{font-size:1rem;}
+  .doc-header .doc-company{font-size:.72rem; color:var(--ink-soft); line-height:1.5;}
+  .doc-header .doc-meta{text-align:right; font-size:.78rem;}
+  .doc-header .doc-meta .doc-title{font-size:1rem; font-weight:800; color:var(--ink); margin-bottom:4px;}
+  .doc-client{
+    background:#FAFBF9;
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:10px 12px;
+    margin-bottom:16px;
+    font-size:.8rem;
+  }
+  .doc-client b{display:block; font-size:.85rem; margin-bottom:2px;}
+  table.doc-table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:.78rem;
+    margin-bottom:14px;
+  }
+  table.doc-table th{
+    text-align:left;
+    border-bottom:2px solid var(--ink);
+    padding:6px 4px;
+    font-size:.7rem;
+    text-transform:uppercase;
+    letter-spacing:.3px;
+    color:var(--ink-soft);
+  }
+  table.doc-table td{
+    padding:6px 4px;
+    border-bottom:1px solid var(--line);
+  }
+  table.doc-table td.num, table.doc-table th.num{text-align:right;}
+  .doc-totals{
+    margin-left:auto;
+    width:220px;
+    font-size:.82rem;
+  }
+  .doc-totals .line{display:flex; justify-content:space-between; padding:3px 0;}
+  .doc-totals .grand{
+    border-top:2px solid var(--ink);
+    margin-top:4px;
+    padding-top:6px;
+    font-weight:800;
+    font-size:.95rem;
+  }
+  .doc-footer{
+    margin-top:24px;
+    padding-top:12px;
+    border-top:1px solid var(--line);
+    font-size:.68rem;
+    color:var(--ink-soft);
+    text-align:center;
+  }
+  @media print{
+    body *{visibility:hidden;}
+    #printArea, #printArea *{visibility:visible;}
+    #printArea{
+      display:block;
+      position:absolute;
+      left:0; top:0;
+      width:100%;
+    }
+  }
+  .status-badge{
+    display:inline-block;
+    font-size:.65rem;
+    font-weight:700;
+    padding:2px 8px;
+    border-radius:20px;
+    margin-left:6px;
+  }
+  .status-en_attente{background:var(--amber-soft); color:#8A551D;}
+  .status-livree{background:#EBF5DF; color:var(--moss-dark);}
+  .status-facturee{background:#DDE6F6; color:#2C4C8A;}
+  .status-select{
+    font-size:.78rem;
+    padding:6px 8px;
+    width:auto;
+  }
+  .cat-section{
+    border-bottom:1px solid var(--line);
+  }
+  .cat-section:last-child{border-bottom:none;}
+  .cat-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:10px 2px;
+    cursor:pointer;
+    font-weight:700;
+    font-size:.82rem;
+    color:var(--ink);
+  }
+  .cat-header .count{
+    font-weight:600;
+    color:var(--ink-soft);
+    font-size:.72rem;
+    margin-left:6px;
+  }
+  .cat-header .chevron{
+    transition:transform .15s;
+    color:var(--ink-soft);
+  }
+  .cat-section.collapsed .chevron{transform:rotate(-90deg);}
+  .cat-body{display:block;}
+  .cat-section.collapsed .cat-body{display:none;}
+  .stat-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+  }
+  .stat-card{
+    background:#FAFBF9;
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:12px;
+  }
+  .stat-card .label{font-size:.68rem; color:var(--ink-soft); font-weight:600; text-transform:uppercase; letter-spacing:.3px;}
+  .stat-card .value{font-size:1.25rem; font-weight:800; color:var(--ink); margin-top:4px;}
+  .stat-card .value.moss{color:var(--moss-dark);}
+</style>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+</head>
+<body>
+
+<div id="loginGate" class="login-gate">
+  <div class="login-box">
+    <div class="logo-mark" style="height:48px; padding:0 14px; font-size:.95rem; margin:0 auto 14px;">SAM_O_KA_Srl</div>
+    <h2 id="loginCompanyName">SAM_O_KA_Srl</h2>
+    <div class="helper" style="text-align:center;">Espace de commande privé. Entrez votre code d'accès personnel pour continuer.</div>
+    <input type="tel" id="loginCodeInput" inputmode="numeric" placeholder="Code d'accès" autocomplete="off">
+    <div id="loginError" class="login-error" style="display:none;">Code incorrect.</div>
+    <button class="btn btn-primary btn-full" id="loginSubmitBtn">Valider</button>
+    <div id="loginContact" class="login-contact"></div>
+  </div>
+</div>
+
+<header class="topbar">
+  <div class="logo-mark">SAM_O_KA_Srl</div>
+  <div style="flex:1;">
+    <h1>SAM_O_KA_Srl</h1>
+    <div class="sub" id="headerSub">Prise de commande — Clients · Catalogue · Commande · Historique</div>
+  </div>
+  <button id="logoutBtn" class="lock-btn" style="display:none;">Déconnexion</button>
+</header>
+
+<nav class="tabs">
+  <button data-view="commande" class="active">Commande</button>
+  <button data-view="clients">Clients</button>
+  <button data-view="catalogue">Catalogue</button>
+  <button data-view="historique">Historique</button>
+  <button data-view="entreprise">Entreprise</button>
+</nav>
+
+<main>
+
+  <!-- COMMANDE -->
+  <section class="view active" id="view-commande">
+    <div class="card">
+      <h2>Client</h2>
+      <select id="orderClientSelect" class="client-picker">
+        <option value="">— Choisir un client —</option>
+      </select>
+      <div id="orderClientLocked" style="display:none;">
+        <div class="locked-client-row">
+          <span id="orderClientLockedName" class="locked-client-name"></span>
+          <button class="btn btn-outline" id="orderClientUnlockBtn">Changer</button>
+        </div>
+      </div>
+      <button class="btn btn-outline btn-full" id="orderClientLockBtn" style="display:none; margin-top:8px;">🔒 Verrouiller sur ce client</button>
+      <div id="orderClientActions" class="helper" style="display:none;"></div>
+    </div>
+
+    <div id="orderProductsCard" class="card" style="display:none;">
+      <h2>Produits disponibles</h2>
+      <input type="text" id="orderSearch" class="search-box" placeholder="Rechercher un produit...">
+      <div id="orderProductsList"></div>
+    </div>
+
+    <div id="orderCustomCard" class="card" style="display:none;">
+      <h2>Produit pas encore dans le catalogue</h2>
+      <div class="helper">Vous souhaitez un produit qui n'est pas encore dans la liste ? Indiquez-le ici — il sera transmis avec votre commande, avec son prix à confirmer.</div>
+      <div class="row">
+        <input type="text" id="customProductNom" placeholder="Nom du produit">
+        <input type="number" id="customProductQty" min="1" value="1" style="max-width:70px;">
+      </div>
+      <button class="btn btn-outline btn-full" id="customProductAddBtn" style="margin-top:8px;">+ Ajouter à la commande</button>
+      <div id="customProductsList" style="margin-top:8px;"></div>
+    </div>
+
+    <div id="orderNotesCard" class="card" style="display:none;">
+      <h2>Notes de livraison</h2>
+      <textarea id="orderNotes" placeholder="Instructions de livraison, horaires, remarques..."></textarea>
+    </div>
+
+    <div id="orderEmptyState" class="card">
+      <div class="empty">Sélectionnez un client pour composer sa commande.</div>
+    </div>
+  </section>
+
+  <!-- CLIENTS -->
+  <section class="view" id="view-clients">
+    <div class="card">
+      <h2 id="clientFormTitle">Nouveau client</h2>
+      <input type="hidden" id="clientEditId">
+      <label>Nom du client / société</label>
+      <input type="text" id="clientNom" placeholder="Ex : Restaurant Le Fournil">
+      <label>Adresse</label>
+      <textarea id="clientAdresse" placeholder="Rue, code postal, ville"></textarea>
+      <div class="row">
+        <div>
+          <label>Téléphone</label>
+          <input type="tel" id="clientTel" placeholder="04...">
+        </div>
+        <div>
+          <label>Contact</label>
+          <input type="text" id="clientContact" placeholder="Nom du contact">
+        </div>
+      </div>
+      <label>Remise habituelle (%)</label>
+      <input type="number" id="clientRemise" step="0.5" min="0" max="100" placeholder="0">
+      <div class="helper">Appliquée automatiquement sur les commandes de ce client.</div>
+      <label>Code d'accès personnel (4 chiffres)</label>
+      <input type="tel" id="clientCode" maxlength="4" inputmode="numeric" placeholder="Ex : 1234">
+      <div class="helper">Ce code permet à ce client, et uniquement lui, d'accéder à son propre espace commande — sans voir les autres clients.</div>
+      <div class="row" style="margin-top:10px;">
+        <button class="btn btn-primary" id="clientSaveBtn">Enregistrer le client</button>
+        <button class="btn btn-outline" id="clientCancelBtn" style="display:none;">Annuler</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Clients enregistrés</h2>
+      <div id="clientsList"><div class="empty">Aucun client pour l'instant.</div></div>
+    </div>
+  </section>
+
+  <!-- CATALOGUE -->
+  <section class="view" id="view-catalogue">
+    <div class="card">
+      <h2 id="productFormTitle">Nouveau produit</h2>
+      <input type="hidden" id="productEditId">
+      <label>Nom du produit</label>
+      <input type="text" id="productNom" placeholder="Ex : Gobelets carton 25cl x50">
+      <div class="row">
+        <div>
+          <label>Prix unitaire (€)</label>
+          <input type="number" id="productPrix" step="0.01" min="0" placeholder="0.00">
+        </div>
+        <div>
+          <label>Unité</label>
+          <input type="text" id="productUnite" placeholder="colis, carton, pièce...">
+        </div>
+      </div>
+      <label>Catégorie</label>
+      <input type="text" id="productCategorie" placeholder="Ex : Emballage, Hygiène...">
+      <label>Visibilité</label>
+      <select id="productClientAssign">
+        <option value="">Tous les clients (produit global)</option>
+      </select>
+      <div class="helper">Choisissez un client précis pour un produit spécifique à celui-ci uniquement.</div>
+      <label>Photo du produit</label>
+      <div class="photo-upload-row">
+        <img id="productPhotoPreview" class="photo-preview" src="" alt="" style="display:none;">
+        <div class="photo-placeholder" id="productPhotoPlaceholder">📷</div>
+        <div style="flex:1;">
+          <label style="font-size:.72rem; font-weight:600; color:var(--ink-soft); margin-bottom:3px; display:block;">Prendre une photo</label>
+          <input type="file" id="productPhotoCameraInput" accept="image/*" capture="environment">
+          <label style="font-size:.72rem; font-weight:600; color:var(--ink-soft); margin:8px 0 3px; display:block;">Choisir depuis la galerie</label>
+          <input type="file" id="productPhotoGalleryInput" accept="image/*">
+          <button type="button" class="btn btn-outline" id="productPhotoRemoveBtn" style="display:none; margin-top:8px; width:100%;">Supprimer la photo</button>
+        </div>
+      </div>
+      <div class="helper">Prends la photo réelle du produit avec l'appareil photo, ou choisis-en une depuis la galerie.</div>
+      <div class="row">
+        <button class="btn btn-primary" id="productSaveBtn">Enregistrer le produit</button>
+        <button class="btn btn-outline" id="productCancelBtn" style="display:none;">Annuler</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Import en masse</h2>
+      <div class="helper">Colle une liste de produits (un par ligne, au format : Nom ; Prix ; Catégorie ; Référence). La référence est facultative. Aucune photo n'est ajoutée automatiquement — tu pourras en ajouter ensuite produit par produit si besoin.</div>
+      <textarea id="bulkImportText" placeholder="Green Cleaner Ultra - BE-REG-02125 - Green Off AG ; 34.75 ; DRD ; 03353
+Pre Dip+ Produit de trempage pour couverts ; 23.65 ; DRD ; 02968" style="min-height:120px;"></textarea>
+      <div class="row" style="margin-top:8px;">
+        <button class="btn btn-indigo" id="bulkImportBtn" style="background:var(--ink); color:#fff;">Importer la liste</button>
+      </div>
+      <div id="bulkImportResult" class="helper" style="margin-top:6px;"></div>
+    </div>
+
+    <div class="card">
+      <h2>Photos en masse</h2>
+      <div class="helper">Sélectionne plusieurs photos d'un coup. Chaque fichier doit être nommé avec la référence exacte du produit (ex : "03353.jpg" pour la référence 03353) — la photo sera associée automatiquement au bon produit.</div>
+      <input type="file" id="bulkPhotoInput" accept="image/*" multiple>
+      <div id="bulkPhotoResult" class="helper" style="margin-top:6px;"></div>
+    </div>
+
+    <div class="card">
+      <h2>Catalogue produits</h2>
+      <input type="text" id="catalogueSearch" class="search-box" placeholder="Rechercher dans le catalogue...">
+      <button class="btn btn-outline btn-full" id="dedupeBtn" style="margin-bottom:8px;">🧹 Nettoyer les doublons</button>
+      <div id="dedupeResult" class="helper"></div>
+      <div id="productsList"><div class="empty">Aucun produit pour l'instant.</div></div>
+    </div>
+  </section>
+
+  <!-- HISTORIQUE -->
+  <section class="view" id="view-historique">
+    <div class="card">
+      <h2>Filtrer</h2>
+      <label>Client</label>
+      <select id="histClientSelect" class="client-picker">
+        <option value="">— Tous les clients —</option>
+      </select>
+      <label>Statut</label>
+      <select id="histStatusSelect">
+        <option value="">— Tous les statuts —</option>
+        <option value="en_attente">En attente</option>
+        <option value="livree">Livrée</option>
+        <option value="facturee">Facturée</option>
+      </select>
+    </div>
+    <div class="card">
+      <h2>Commandes précédentes</h2>
+      <div id="historiqueList"><div class="empty">Aucune commande enregistrée.</div></div>
+    </div>
+  </section>
+
+  <!-- ENTREPRISE -->
+  <section class="view" id="view-entreprise">
+    <div class="card">
+      <h2>Coordonnées de l'entreprise</h2>
+      <div class="helper">Ces informations apparaissent sur chaque bon de commande imprimé ou exporté en PDF.</div>
+      <label>Raison sociale</label>
+      <input type="text" id="companyNom" placeholder="Ex : SAM_O_KA_Srl — SOK Distribution">
+      <label>Adresse</label>
+      <textarea id="companyAdresse" placeholder="Rue, code postal, ville"></textarea>
+      <div class="row">
+        <div>
+          <label>N° TVA</label>
+          <input type="text" id="companyTva" placeholder="BE0xxx.xxx.xxx">
+        </div>
+        <div>
+          <label>Taux de TVA (%)</label>
+          <input type="number" id="companyTvaRate" step="0.1" min="0" placeholder="21">
+        </div>
+      </div>
+      <div class="row">
+        <div>
+          <label>Téléphone</label>
+          <input type="tel" id="companyTel" placeholder="04...">
+        </div>
+        <div>
+          <label>E-mail</label>
+          <input type="text" id="companyEmail" placeholder="contact@...">
+        </div>
+      </div>
+      <button class="btn btn-primary btn-full" id="companySaveBtn">Enregistrer les coordonnées</button>
+    </div>
+
+    <div class="card">
+      <h2>Ton code de gestion</h2>
+      <div class="helper">Ce code te donne accès à toute l'appli (Clients, Catalogue, Historique, Entreprise). Ne le partage pas avec un client — donne-leur uniquement leur code personnel (fiche client).</div>
+      <label>Code de gestion (4 chiffres)</label>
+      <input type="tel" id="companyPin" maxlength="4" inputmode="numeric" placeholder="Ex : 9999">
+    </div>
+
+    <div class="card">
+      <h2>Sauvegarde des données</h2>
+      <div class="helper">Exporte un fichier de secours contenant tes clients, produits (avec photos), commandes et coordonnées. À refaire régulièrement, surtout avant de changer de téléphone.</div>
+      <button class="btn btn-dark btn-full" id="exportBtn">⬇️ Exporter une sauvegarde</button>
+      <label style="margin-top:14px;">Restaurer une sauvegarde</label>
+      <input type="file" id="importFile" accept="application/json,.json">
+      <div class="helper">⚠️ La restauration remplace toutes les données actuelles de l'application.</div>
+    </div>
+  </section>
+
+</main>
+
+<div id="printArea">
+  <div class="doc-page" id="printContent"></div>
+</div>
+
+<div id="cartBar" class="cart-bar" style="display:none;">
+  <div class="info">
+    <div class="count" id="cartCount">0 article</div>
+    <div class="total" id="cartTotal" style="display:none;">0,00 €</div>
+  </div>
+  <button id="validateOrderBtn">Valider la commande</button>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<div id="confirmOverlay" class="confirm-overlay" style="display:none;">
+  <div class="confirm-box">
+    <div id="confirmMessage" class="confirm-message"></div>
+    <div class="row">
+      <button class="btn btn-outline" id="confirmCancelBtn">Annuler</button>
+      <button class="btn btn-danger-solid" id="confirmOkBtn">Supprimer</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const firebaseConfig = {
+    apiKey: "AIzaSyDDMlefgIB1Z8fi6HCoeLvhjh4gM2NxPfs",
+    authDomain: "sok-distribution.firebaseapp.com",
+    projectId: "sok-distribution",
+    storageBucket: "sok-distribution.firebasestorage.app",
+    messagingSenderId: "503561319981",
+    appId: "1:503561319981:web:953d24ab3dc052e4edaaa4"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+  const COLLECTION = 'sok_app';
+
+  const fsStorage = {
+    async get(key){
+      const snap = await db.collection(COLLECTION).doc(key).get();
+      if(!snap.exists) return null;
+      const data = snap.data();
+      return { key, value: data ? data.value : null };
+    },
+    async set(key, value){
+      await db.collection(COLLECTION).doc(key).set({ value });
+      return { key, value };
+    },
+    async delete(key){
+      await db.collection(COLLECTION).doc(key).delete();
+      return { key, deleted: true };
+    }
+  };
+
+  const K_CLIENTS = 'sok-order-clients';
+  const K_PRODUCTS = 'sok-order-products';
+  const K_ORDERS = 'sok-order-history';
+  const K_COMPANY = 'sok-order-company';
+
+  const DEFAULT_COMPANY = {
+    nom: 'SAM_O_KA_Srl — SOK Distribution',
+    adresse: 'Boulevard de la Meuse 71, 5100 Jambes',
+    tva: 'BE0451.418.303',
+    tvaRate: 21,
+    tel: '',
+    email: '',
+    pin: ''
+  };
+  let company = { ...DEFAULT_COMPANY };
+
+  let clients = [];
+  let products = [];
+  let orders = [];
+  let currentOrderClientId = '';
+  let cart = {}; 
+  let customItems = []; 
+  let session = null; 
+  let pendingPhotoData; 
+  const photoCache = {}; 
+  const PLACEHOLDER = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='44' height='44'><rect width='44' height='44' fill='%23E1E5E2'/></svg>";
+
+  function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+  function fmt(n){ return (Math.round(n*100)/100).toFixed(2).replace('.', ',') + ' €'; }
+
+  function compressImage(file){
+    return new Promise((resolve, reject)=>{
+      const reader = new FileReader();
+      reader.onload = (e)=>{
+        const img = new Image();
+        img.onload = ()=>{
+          const maxW = 480;
+          const scale = Math.min(1, maxW / img.width);
+          const w = Math.max(1, Math.round(img.width * scale));
+          const h = Math.max(1, Math.round(img.height * scale));
+          const canvas = document.createElement('canvas');
+          canvas.width = w; canvas.height = h;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, w, h);
+          resolve(canvas.toDataURL('image/jpeg', 0.6));
+        };
+        img.onerror = reject;
+        img.src = e.target.result;
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  async function ensurePhotoLoaded(id){
+    if(photoCache[id] !== undefined) return photoCache[id];
+    try{
+      const res = await fsStorage.get('sok-product-photo:' + id);
+      photoCache[id] = res ? res.value : null;
+    }catch(e){
+      photoCache[id] = null;
+    }
+    if(photoCache[id]){
+      document.querySelectorAll(`.prod-thumb[data-photo-id="${id}"]`).forEach(img=> img.src = photoCache[id]);
+    }
+    return photoCache[id];
+  }
+
+  function loadThumbnails(list){
+    list.forEach(p=> ensurePhotoLoaded(p.id));
+  }
+
+  function showPhotoPreview(url){
+    const preview = document.getElementById('productPhotoPreview');
+    preview.src = url;
+    preview.style.display = 'block';
+    document.getElementById('productPhotoPlaceholder').style.display = 'none';
+    document.getElementById('productPhotoRemoveBtn').style.display = 'inline-block';
+  }
+  function clearPhotoPreview(){
+    const preview = document.getElementById('productPhotoPreview');
+    preview.src = '';
+    preview.style.display = 'none';
+    document.getElementById('productPhotoPlaceholder').style.display = 'flex';
+    document.getElementById('productPhotoRemoveBtn').style.display = 'none';
+  }
+
+  async function handlePhotoFile(file){
+    if(!file) return;
+    try{
+      const dataUrl = await compressImage(file);
+      pendingPhotoData = dataUrl;
+      showPhotoPreview(dataUrl);
+    }catch(err){
+      showToast("Impossible de charger cette photo");
+    }
+  }
+  document.getElementById('productPhotoCameraInput').addEventListener('change', (e)=> handlePhotoFile(e.target.files[0]));
+  document.getElementById('productPhotoGalleryInput').addEventListener('change', (e)=> handlePhotoFile(e.target.files[0]));
+  document.getElementById('productPhotoRemoveBtn').addEventListener('click', ()=>{
+    pendingPhotoData = null;
+    document.getElementById('productPhotoCameraInput').value = '';
+    document.getElementById('productPhotoGalleryInput').value = '';
+    clearPhotoPreview();
+  });
+
+  function showToast(msg){
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(()=> t.classList.remove('show'), 1800);
+  }
+
+  function confirmModal(message){
+    return new Promise((resolve)=>{
+      const overlay = document.getElementById('confirmOverlay');
+      document.getElementById('confirmMessage').textContent = message;
+      overlay.style.display = 'flex';
+      const okBtn = document.getElementById('confirmOkBtn');
+      const cancelBtn = document.getElementById('confirmCancelBtn');
+      function cleanup(result){
+        overlay.style.display = 'none';
+        okBtn.removeEventListener('click', onOk);
+        cancelBtn.removeEventListener('click', onCancel);
+        resolve(result);
+      }
+      function onOk(){ cleanup(true); }
+      function onCancel(){ cleanup(false); }
+      okBtn.addEventListener('click', onOk);
+      cancelBtn.addEventListener('click', onCancel);
+    });
+  }
+
+  async function loadAll(){
+    try{
+      const [c,p,o,co] = await Promise.all([
+        safeGet(K_CLIENTS), safeGet(K_PRODUCTS), safeGet(K_ORDERS), safeGet(K_COMPANY)
+      ]);
+      clients = c ? JSON.parse(c) : [];
+      products = p ? JSON.parse(p) : [];
+      orders = o ? JSON.parse(o) : [];
+      company = co ? { ...DEFAULT_COMPANY, ...JSON.parse(co) } : { ...DEFAULT_COMPANY };
+    }catch(e){
+      console.error('Erreur de chargement', e);
+    }
+    dataReady = true;
+    renderAll();
+    document.getElementById('loginCompanyName').textContent = company.nom || 'SAM_O_KA_Srl';
+    const contactBits = [];
+    if(company.tel) contactBits.push('Tél : ' + company.tel);
+    if(company.email) contactBits.push(company.email);
+    document.getElementById('loginContact').textContent = contactBits.length
+      ? 'Code oublié ? Contactez-nous — ' + contactBits.join(' · ')
+      : 'Code oublié ? Contactez votre représentant SAM_O_KA_Srl.';
+  }
+
+  async function safeGet(key){
+    try{
+      const res = await fsStorage.get(key);
+      return res ? res.value : null;
+    }catch(e){
+      return null;
+    }
+  }
+
+  async function saveClients(){
+    try{ await fsStorage.set(K_CLIENTS, JSON.stringify(clients)); }
+    catch(e){ showToast("Erreur d'enregistrement (clients)"); }
+  }
+  async function saveProducts(){
+    try{ await fsStorage.set(K_PRODUCTS, JSON.stringify(products)); }
+    catch(e){ showToast("Erreur d'enregistrement (produits)"); }
+  }
+  async function saveOrders(){
+    try{ await fsStorage.set(K_ORDERS, JSON.stringify(orders)); }
+    catch(e){ showToast("Erreur d'enregistrement (commandes)"); }
+  }
+  async function saveCompany(){
+    try{ await fsStorage.set(K_COMPANY, JSON.stringify(company)); }
+    catch(e){ showToast("Erreur d'enregistrement (entreprise)"); }
+  }
+
+  function renderCompanyForm(){
+    document.getElementById('companyNom').value = company.nom || '';
+    document.getElementById('companyAdresse').value = company.adresse || '';
+    document.getElementById('companyTva').value = company.tva || '';
+    document.getElementById('companyTvaRate').value = company.tvaRate!=null ? company.tvaRate : 21;
+    document.getElementById('companyTel').value = company.tel || '';
+    document.getElementById('companyEmail').value = company.email || '';
+    document.getElementById('companyPin').value = company.pin || '';
+  }
+
+  document.getElementById('companySaveBtn').addEventListener('click', async ()=>{
+    const pin = document.getElementById('companyPin').value.trim();
+    if(pin && !/^\d{4}$/.test(pin)){
+      showToast('Le code de gestion doit contenir exactement 4 chiffres');
+      return;
+    }
+    company = {
+      ...company,
+      nom: document.getElementById('companyNom').value.trim(),
+      adresse: document.getElementById('companyAdresse').value.trim(),
+      tva: document.getElementById('companyTva').value.trim(),
+      tvaRate: parseFloat(document.getElementById('companyTvaRate').value) || 0,
+      tel: document.getElementById('companyTel').value.trim(),
+      email: document.getElementById('companyEmail').value.trim(),
+      pin
+    };
+    await saveCompany();
+    showToast('Coordonnées enregistrées');
+  });
+
+  document.getElementById('exportBtn').addEventListener('click', async ()=>{
+    showToast('Préparation de la sauvegarde...');
+    const photos = {};
+    for(const p of products){
+      const val = await ensurePhotoLoaded(p.id);
+      if(val) photos[p.id] = val;
+    }
+    const backup = {
+      type: 'sok-order-backup',
+      exportedAt: new Date().toISOString(),
+      clients, products, orders, company, photos
+    };
+    const blob = new Blob([JSON.stringify(backup)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const stamp = new Date().toISOString().slice(0,10);
+    a.href = url;
+    a.download = `sok-sauvegarde-${stamp}.json`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(()=> URL.revokeObjectURL(url), 2000);
+    showToast('Sauvegarde téléchargée');
+  });
+
+  document.getElementById('importFile').addEventListener('change', async (e)=>{
+    const file = e.target.files[0];
+    if(!file) return;
+    try{
+      const text = await file.text();
+      const backup = JSON.parse(text);
+      if(!backup || !Array.isArray(backup.clients) || !Array.isArray(backup.products) || !Array.isArray(backup.orders)){
+        showToast('Fichier de sauvegarde invalide');
+        return;
+      }
+      const nb = backup.clients.length;
+      if(!(await confirmModal(`Restaurer cette sauvegarde (${nb} client(s)) ? Toutes les données actuelles seront remplacées.`))) {
+        e.target.value = '';
+        return;
+      }
+      clients = backup.clients || [];
+      products = backup.products || [];
+      orders = backup.orders || [];
+      company = backup.company ? { ...DEFAULT_COMPANY, ...backup.company } : { ...DEFAULT_COMPANY };
+      await Promise.all([saveClients(), saveProducts(), saveOrders(), saveCompany()]);
+
+      const photos = backup.photos || {};
+      for(const id of Object.keys(photoCache)) delete photoCache[id];
+      for(const [pid, dataUrl] of Object.entries(photos)){
+        try{ await fsStorage.set('sok-product-photo:' + pid, dataUrl); photoCache[pid] = dataUrl; }
+        catch(err){}
+      }
+
+      e.target.value = '';
+      renderAll();
+      showToast('Sauvegarde restaurée');
+    }catch(err){
+      showToast('Impossible de lire ce fichier');
+    }
+  });
+
+  let dataReady = false;
+
+  function applySessionUI(){
+    const gate = document.getElementById('loginGate');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const headerSub = document.getElementById('headerSub');
+    const allTabs = document.querySelectorAll('nav.tabs button');
+
+    if(!session){
+      gate.style.display = 'flex';
+      logoutBtn.style.display = 'none';
+      return;
+    }
+    gate.style.display = 'none';
+    logoutBtn.style.display = 'inline-block';
+
+    if(session.type === 'gestion'){
+      allTabs.forEach(b=> b.style.display = '');
+      headerSub.textContent = 'Prise de commande — Clients · Catalogue · Commande · Historique';
+    }else{
+      allTabs.forEach(b=>{
+        b.style.display = (b.dataset.view==='commande' || b.dataset.view==='historique') ? '' : 'none';
+      });
+      const c = clients.find(x=>x.id===session.clientId);
+      headerSub.textContent = c ? `Espace client — ${c.nom}` : 'Espace client';
+      currentOrderClientId = session.clientId;
+      clientLocked = true;
+      document.getElementById('histClientSelect').closest('.card').style.display = 'none';
+      document.querySelector('nav.tabs button[data-view=commande]').click();
+    }
+  }
+
+  document.getElementById('loginSubmitBtn').addEventListener('click', ()=>{
+    if(!dataReady){ showToast('Chargement en cours, réessaie dans un instant'); return; }
+    const code = document.getElementById('loginCodeInput').value.trim();
+    const errorEl = document.getElementById('loginError');
+    errorEl.style.display = 'none';
+
+    if(company.pin && code === company.pin){
+      session = { type: 'gestion' };
+      document.getElementById('loginCodeInput').value = '';
+      applySessionUI();
+      renderAll();
+      return;
+    }
+    if(!company.pin && code === ''){
+      session = { type: 'gestion' };
+      applySessionUI();
+      renderAll();
+      return;
+    }
+    const matchedClient = code ? clients.find(c=> c.code && c.code === code) : null;
+    if(matchedClient){
+      session = { type: 'client', clientId: matchedClient.id };
+      document.getElementById('loginCodeInput').value = '';
+      applySessionUI();
+      renderAll();
+      return;
+    }
+    errorEl.style.display = 'block';
+  });
+
+  document.getElementById('loginCodeInput').addEventListener('keydown', (e)=>{
+    if(e.key==='Enter') document.getElementById('loginSubmitBtn').click();
+  });
+
+  document.getElementById('logoutBtn').addEventListener('click', ()=>{
+    session = null;
+    currentOrderClientId = '';
+    clientLocked = false;
+    cart = {};
+    customItems = [];
+    document.getElementById('loginCodeInput').value = '';
+    applySessionUI();
+  });
+
+  document.querySelectorAll('nav.tabs button').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.remove('active'));
+      document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('view-'+btn.dataset.view).classList.add('active');
+      document.getElementById('cartBar').style.display = (btn.dataset.view === 'commande' && currentOrderClientId) ? 'flex' : 'none';
+    });
+  });
+
+  function renderClientSelects(){
+    const opts = clients.map(c=>`<option value="${c.id}">${escapeHtml(c.nom)}</option>`).join('');
+    document.getElementById('orderClientSelect').innerHTML = '<option value="">— Choisir un client —</option>' + opts;
+    document.getElementById('histClientSelect').innerHTML = '<option value="">— Tous les clients —</option>' + opts;
+    document.getElementById('productClientAssign').innerHTML = '<option value="">Tous les clients (produit global)</option>' + opts;
+    if(currentOrderClientId) document.getElementById('orderClientSelect').value = currentOrderClientId;
+  }
+
+  function renderClientsList(){
+    const el = document.getElementById('clientsList');
+    if(!clients.length){ el.innerHTML = '<div class="empty">Aucun client pour l\'instant.</div>'; return; }
+    el.innerHTML = clients.map(c=>`
+      <div class="list-item">
+        <div>
+          <div class="name">${escapeHtml(c.nom)}${c.remise? ` <span class="tag">-${c.remise}%</span>`:''}${c.code? ` <span class="tag global">Code ${escapeHtml(c.code)}</span>`:''}</div>
+          <div class="meta">${escapeHtml(c.adresse||'')}${c.tel? ' · '+escapeHtml(c.tel):''}${c.contact? ' · '+escapeHtml(c.contact):''}</div>
+        </div>
+        <div>
+          <button class="icon-btn" title="Modifier" onclick="SOK.editClient('${c.id}')">✏️</button>
+          <button class="icon-btn" title="Supprimer" onclick="SOK.deleteClient('${c.id}')">🗑️</button>
+        </div>
+      </div>`).join('');
+  }
+
+  document.getElementById('clientSaveBtn').addEventListener('click', async ()=>{
+    const nom = document.getElementById('clientNom').value.trim();
+    if(!nom){ showToast('Le nom du client est requis'); return; }
+    const editId = document.getElementById('clientEditId').value;
+    const code = document.getElementById('clientCode').value.trim();
+    if(code && !/^\d{4}$/.test(code)){
+      showToast('Le code doit contenir exactement 4 chiffres');
+      return;
+    }
+    if(code){
+      const dup = clients.find(x=> x.code===code && x.id!==editId);
+      if(dup){ showToast('Ce code est déjà utilisé par '+dup.nom); return; }
+    }
+    const data = {
+      nom,
+      adresse: document.getElementById('clientAdresse').value.trim(),
+      tel: document.getElementById('clientTel').value.trim(),
+      contact: document.getElementById('clientContact').value.trim(),
+      remise: parseFloat(document.getElementById('clientRemise').value) || 0,
+      code
+    };
+    if(editId){
+      const c = clients.find(x=>x.id===editId);
+      Object.assign(c, data);
+    }else{
+      clients.push({ id: uid(), ...data });
+    }
+    await saveClients();
+    resetClientForm();
+    renderClientsList();
+    renderClientSelects();
+    showToast('Client enregistré');
+  });
+
+  document.getElementById('clientCancelBtn').addEventListener('click', resetClientForm);
+
+  function resetClientForm(){
+    document.getElementById('clientEditId').value = '';
+    document.getElementById('clientNom').value = '';
+    document.getElementById('clientAdresse').value = '';
+    document.getElementById('clientTel').value = '';
+    document.getElementById('clientContact').value = '';
+    document.getElementById('clientRemise').value = '';
+    document.getElementById('clientCode').value = '';
+    document.getElementById('clientFormTitle').textContent = 'Nouveau client';
+    document.getElementById('clientCancelBtn').style.display = 'none';
+  }
+
+  window.SOK = window.SOK || {};
+  SOK.editClient = function(id){
+    const c = clients.find(x=>x.id===id);
+    if(!c) return;
+    document.getElementById('clientEditId').value = c.id;
+    document.getElementById('clientNom').value = c.nom;
+    document.getElementById('clientAdresse').value = c.adresse||'';
+    document.getElementById('clientTel').value = c.tel||'';
+    document.getElementById('clientContact').value = c.contact||'';
+    document.getElementById('clientRemise').value = c.remise || '';
+    document.getElementById('clientCode').value = c.code || '';
+    document.getElementById('clientFormTitle').textContent = 'Modifier le client';
+    document.getElementById('clientCancelBtn').style.display = 'inline-block';
+    document.querySelector('nav.tabs button[data-view=clients]').click();
+    window.scrollTo({top:0, behavior:'smooth'});
+  };
+
+  SOK.deleteClient = async function(id){
+    const client = clients.find(x=>x.id===id);
+    const nbOrders = orders.filter(o=>o.clientId===id).length;
+    const msg = nbOrders
+      ? `Supprimer "${client? client.nom : 'ce client'}" et ses ${nbOrders} commande(s) enregistrée(s) ? Cette action est irréversible.`
+      : `Supprimer "${client? client.nom : 'ce client'}" ? Cette action est irréversible.`;
+    if(!(await confirmModal(msg))) return;
+    clients = clients.filter(x=>x.id!==id);
+    orders = orders.filter(o=>o.clientId!==id);
+    await Promise.all([saveClients(), saveOrders()]);
+    renderClientsList();
+    renderClientSelects();
+    renderHistorique();
+    if(currentOrderClientId===id){ currentOrderClientId=''; renderOrderView(); }
+    showToast('Client et ses commandes supprimés');
+  };
+
+  const catCollapsed = {}; 
+
+  function productItemHtml(p){
+    const client = clients.find(c=>c.id===p.clientId);
+    const tag = p.clientId ? `<span class="tag">${client? escapeHtml(client.nom): 'client supprimé'}</span>` : `<span class="tag global">Global</span>`;
+    return `
+      <div class="list-item">
+        <img class="prod-thumb" data-photo-id="${p.id}" src="${photoCache[p.id]||PLACEHOLDER}" alt="">
+        <div style="flex:1;">
+          <div class="name">${escapeHtml(p.nom)} ${tag}</div>
+          <div class="meta">${p.prix!=null? fmt(p.prix):'—'} / ${escapeHtml(p.unite||'unité')}${p.categorie? ' · '+escapeHtml(p.categorie):''}</div>
+        </div>
+        <div>
+          <button class="icon-btn" title="Modifier" onclick="SOK.editProduct('${p.id}')">✏️</button>
+          <button class="icon-btn" title="Supprimer" onclick="SOK.deleteProduct('${p.id}')">🗑️</button>
+        </div>
+      </div>`;
+  }
+
+  function renderProductsList(filterText){
+    const el = document.getElementById('productsList');
+    let list = products.slice().sort((a,b)=> (a.categorie||'').localeCompare(b.categorie||'') || a.nom.localeCompare(b.nom));
+    if(filterText){
+      const f = filterText.toLowerCase();
+      list = list.filter(p=> p.nom.toLowerCase().includes(f) || (p.categorie||'').toLowerCase().includes(f));
+    }
+    if(!list.length){ el.innerHTML = '<div class="empty">Aucun produit trouvé.</div>'; return; }
+
+    if(filterText){
+      el.innerHTML = list.map(productItemHtml).join('');
+    }else{
+      const groups = {};
+      const order = [];
+      list.forEach(p=>{
+        const key = p.categorie || 'Sans catégorie';
+        if(!groups[key]){ groups[key] = []; order.push(key); }
+        groups[key].push(p);
+      });
+      el.innerHTML = order.map(key=>{
+        const items = groups[key];
+        const collapsed = catCollapsed[key] ? 'collapsed' : '';
+        return `
+        <div class="cat-section ${collapsed}" data-cat="${escapeHtml(key)}">
+          <div class="cat-header" onclick="SOK.toggleCategory('${key.replace(/'/g,"\\'")}')">
+            <span>${escapeHtml(key)} <span class="count">(${items.length})</span></span>
+            <span class="chevron">▾</span>
+          </div>
+          <div class="cat-body">${items.map(productItemHtml).join('')}</div>
+        </div>`;
+      }).join('');
+    }
+    loadThumbnails(list);
+  }
+
+  SOK.toggleCategory = function(key){
+    catCollapsed[key] = !catCollapsed[key];
+    const section = document.querySelector(`.cat-section[data-cat="${CSS.escape(key)}"]`);
+    if(section) section.classList.toggle('collapsed');
+  };
+
+  document.getElementById('productSaveBtn').addEventListener('click', async ()=>{
+    const nom = document.getElementById('productNom').value.trim();
+    if(!nom){ showToast('Le nom du produit est requis'); return; }
+    const editId = document.getElementById('productEditId').value;
+    const id = editId || uid();
+    const prixRaw = document.getElementById('productPrix').value;
+    const data = {
+      nom,
+      prix: prixRaw==='' ? null : parseFloat(prixRaw),
+      unite: document.getElementById('productUnite').value.trim(),
+      categorie: document.getElementById('productCategorie').value.trim(),
+      clientId: document.getElementById('productClientAssign').value || null
+    };
+    if(editId){
+      const p = products.find(x=>x.id===editId);
+      Object.assign(p, data);
+    }else{
+      products.push({ id, ...data });
+    }
+    await saveProducts();
+
+    if(pendingPhotoData === null){
+      try{ await fsStorage.delete('sok-product-photo:' + id); }catch(e){}
+      photoCache[id] = null;
+    }else if(typeof pendingPhotoData === 'string'){
+      try{
+        await fsStorage.set('sok-product-photo:' + id, pendingPhotoData);
+        photoCache[id] = pendingPhotoData;
+      }catch(e){
+        showToast('Photo non enregistrée (fichier trop volumineux ?)');
+      }
+    }
+    pendingPhotoData = undefined;
+
+    resetProductForm();
+    renderProductsList(document.getElementById('catalogueSearch').value);
+    showToast('Produit enregistré');
+  });
+
+  document.getElementById('productCancelBtn').addEventListener('click', resetProductForm);
+
+  document.getElementById('bulkImportBtn').addEventListener('click', async ()=>{
+    const raw = document.getElementById('bulkImportText').value;
+    const lines = raw.split('\n').map(l=>l.trim()).filter(Boolean);
+    if(!lines.length){ showToast('Colle au moins une ligne'); return; }
+    let added = 0, skipped = 0;
+    lines.forEach(line=>{
+      const parts = line.split(';').map(p=>p.trim());
+      const nom = parts[0];
+      if(!nom){ skipped++; return; }
+      const prixRaw = (parts[1]||'').replace(',', '.');
+      const prix = prixRaw ? parseFloat(prixRaw) : null;
+      const categorie = parts[2] || '';
+      const ref = parts[3] || '';
+      products.push({
+        id: uid(),
+        nom: ref ? `${nom} (${ref})` : nom,
+        prix: (prix!=null && !isNaN(prix)) ? prix : null,
+        unite: '',
+        categorie,
+        clientId: null
+      });
+      added++;
+    });
+    await saveProducts();
+    document.getElementById('bulkImportText').value = '';
+    document.getElementById('bulkImportResult').textContent = `${added} produit(s) importé(s)${skipped? ', '+skipped+' ligne(s) ignorée(s)':''}.`;
+    renderProductsList(document.getElementById('catalogueSearch').value);
+    showToast(`${added} produits importés`);
+  });
+
+  document.getElementById('bulkPhotoInput').addEventListener('change', async (e)=>{
+    const files = Array.from(e.target.files);
+    if(!files.length) return;
+    const resultEl = document.getElementById('bulkPhotoResult');
+    resultEl.textContent = 'Import en cours...';
+    let matched = 0;
+    const unmatched = [];
+    for(const file of files){
+      const baseName = file.name.replace(/\.[^.]+$/, '').trim();
+      const product = products.find(p => p.nom.includes(`(${baseName})`));
+      if(!product){ unmatched.push(file.name); continue; }
+      try{
+        const dataUrl = await compressImage(file);
+        await fsStorage.set('sok-product-photo:' + product.id, dataUrl);
+        photoCache[product.id] = dataUrl;
+        matched++;
+      }catch(err){ unmatched.push(file.name); }
+    }
+    resultEl.textContent = `${matched} photo(s) associée(s).` + (unmatched.length ? ` Non trouvées : ${unmatched.join(', ')}` : '');
+    renderProductsList(document.getElementById('catalogueSearch').value);
+    showToast(`${matched} photos importées`);
+    e.target.value = '';
+  });
+
+  document.getElementById('dedupeBtn').addEventListener('click', async ()=>{
+    if(!(await confirmModal('Rechercher et supprimer les produits en double (même nom, prix et catégorie) ? La fiche avec photo sera gardée en priorité.'))) return;
+    const seen = new Map();
+    const toRemove = [];
+    products.forEach(p=>{
+      const key = (p.nom||'') + '|' + (p.prix||'') + '|' + (p.categorie||'');
+      if(!seen.has(key)){
+        seen.set(key, p);
+      }else{
+        const kept = seen.get(key);
+        const keptHasPhoto = photoCache[kept.id];
+        const currentHasPhoto = photoCache[p.id];
+        if(!keptHasPhoto && currentHasPhoto){
+          toRemove.push(kept.id);
+          seen.set(key, p);
+        }else{
+          toRemove.push(p.id);
+        }
+      }
+    });
+    if(!toRemove.length){
+      document.getElementById('dedupeResult').textContent = 'Aucun doublon trouvé.';
+      showToast('Aucun doublon trouvé');
+      return;
+    }
+    products = products.filter(p=> !toRemove.includes(p.id));
+    await saveProducts();
+    for(const id of toRemove){
+      try{ await fsStorage.delete('sok-product-photo:' + id); }catch(e){}
+      delete photoCache[id];
+    }
+    document.getElementById('dedupeResult').textContent = `${toRemove.length} doublon(s) supprimé(s).`;
+    renderProductsList(document.getElementById('catalogueSearch').value);
+    showToast(`${toRemove.length} doublons supprimés`);
+  });
+
+  function resetProductForm(){
+    document.getElementById('productEditId').value = '';
+    document.getElementById('productNom').value = '';
+    document.getElementById('productPrix').value = '';
+    document.getElementById('productUnite').value = '';
+    document.getElementById('productCategorie').value = '';
+    document.getElementById('productClientAssign').value = '';
+    document.getElementById('productPhotoCameraInput').value = '';
+    document.getElementById('productPhotoGalleryInput').value = '';
+    pendingPhotoData = undefined;
+    clearPhotoPreview();
+    document.getElementById('productFormTitle').textContent = 'Nouveau produit';
+    document.getElementById('productCancelBtn').style.display = 'none';
+  }
+
+  SOK.editProduct = async function(id){
+    const p = products.find(x=>x.id===id);
+    if(!p) return;
+    document.getElementById('productEditId').value = p.id;
+    document.getElementById('productNom').value = p.nom;
+    document.getElementById('productPrix').value = p.prix!=null? p.prix : '';
+    document.getElementById('productUnite').value = p.unite||'';
+    document.getElementById('productCategorie').value = p.categorie||'';
+    document.getElementById('productClientAssign').value = p.clientId||'';
+    document.getElementById('productPhotoCameraInput').value = '';
+    document.getElementById('productPhotoGalleryInput').value = '';
+    pendingPhotoData = undefined;
+    clearPhotoPreview();
+    document.getElementById('productFormTitle').textContent = 'Modifier le produit';
+    document.getElementById('productCancelBtn').style.display = 'inline-block';
+    document.querySelector('nav.tabs button[data-view=catalogue]').click();
+    window.scrollTo({top:0, behavior:'smooth'});
+    const existing = await ensurePhotoLoaded(id);
+    if(existing) showPhotoPreview(existing);
+  };
+
+  SOK.deleteProduct = async function(id){
+    if(!(await confirmModal('Supprimer ce produit du catalogue ?'))) return;
+    products = products.filter(x=>x.id!==id);
+    await saveProducts();
+    try{ await fsStorage.delete('sok-product-photo:' + id); }catch(e){}
+    delete photoCache[id];
+    renderProductsList(document.getElementById('catalogueSearch').value);
+  };
+
+  document.getElementById('catalogueSearch').addEventListener('input', (e)=>{
+    renderProductsList(e.target.value);
+  });
+
+  let clientLocked = false;
+
+  document.getElementById('orderClientSelect').addEventListener('change', (e)=>{
+    currentOrderClientId = e.target.value;
+    cart = {};
+    customItems = [];
+    renderOrderView();
+  });
+
+  document.getElementById('orderClientLockBtn').addEventListener('click', ()=>{
+    if(!currentOrderClientId) return;
+    clientLocked = true;
+    renderOrderView(document.getElementById('orderSearch') ? document.getElementById('orderSearch').value : '');
+  });
+
+  document.getElementById('orderClientUnlockBtn').addEventListener('click', ()=>{
+    if(session && session.type === 'client') return;
+    clientLocked = false;
+    renderOrderView();
+  });
+
+  function visibleProductsForClient(clientId){
+    return products.filter(p=> !p.clientId || p.clientId===clientId);
+  }
+
+  function lastOrderForClient(clientId){
+    const list = orders.filter(o=>o.clientId===clientId).sort((a,b)=> b.date.localeCompare(a.date));
+    return list[0] || null;
+  }
+
+  function renderOrderView(filterText){
+    const productsCard = document.getElementById('orderProductsCard');
+    const customCard = document.getElementById('orderCustomCard');
+    const notesCard = document.getElementById('orderNotesCard');
+    const emptyState = document.getElementById('orderEmptyState');
+    const actionsEl = document.getElementById('orderClientActions');
+    const cartBar = document.getElementById('cartBar');
+    const selectEl = document.getElementById('orderClientSelect');
+    const lockedEl = document.getElementById('orderClientLocked');
+    const lockBtn = document.getElementById('orderClientLockBtn');
+
+    if(clientLocked && currentOrderClientId){
+      selectEl.style.display = 'none';
+      lockedEl.style.display = 'block';
+      lockBtn.style.display = 'none';
+      const c = clients.find(x=>x.id===currentOrderClientId);
+      document.getElementById('orderClientLockedName').textContent = c ? c.nom : '';
+      document.getElementById('orderClientUnlockBtn').style.display = (session && session.type==='client') ? 'none' : 'inline-block';
+    }else{
+      selectEl.style.display = 'block';
+      lockedEl.style.display = 'none';
+      lockBtn.style.display = currentOrderClientId ? 'block' : 'none';
+    }
+
+    if(!currentOrderClientId){
+      productsCard.style.display = 'none';
+      customCard.style.display = 'none';
+      notesCard.style.display = 'none';
+      emptyState.style.display = 'block';
+      cartBar.style.display = 'none';
+      actionsEl.style.display = 'none';
+      return;
+    }
+    emptyState.style.display = 'none';
+    productsCard.style.display = 'block';
+    customCard.style.display = 'block';
+    notesCard.style.display = 'block';
+
+    const client = clients.find(c=>c.id===currentOrderClientId);
+    const last = lastOrderForClient(currentOrderClientId);
+    if(last){
+      actionsEl.style.display = 'block';
+      actionsEl.innerHTML = `Dernière commande le ${formatDate(last.date)} (${fmt(last.total)}). <a href="#" id="reloadLastOrderLink" style="color:var(--moss-dark); font-weight:700;">Recharger cette commande</a>`;
+      document.getElementById('reloadLastOrderLink').onclick = (ev)=>{
+        ev.preventDefault();
+        cart = {};
+        customItems = [];
+        last.items.forEach(it=>{
+          if(it.horsCatalogue){ customItems.push({ id: uid(), nom: it.nom, qty: it.qty }); }
+          else{ cart[it.productId] = it.qty; }
+        });
+        renderOrderView(document.getElementById('orderSearch').value);
+        showToast('Dernière commande rechargée');
+      };
+    }else{
+      actionsEl.style.display = 'block';
+      actionsEl.innerHTML = 'Aucune commande précédente pour ce client.';
+    }
+    if(client && client.remise){
+      actionsEl.innerHTML += `<br>Remise habituelle appliquée : <b>-${client.remise}%</b>`;
+    }
+
+    let list = visibleProductsForClient(currentOrderClientId).sort((a,b)=> (a.categorie||'').localeCompare(b.categorie||'') || a.nom.localeCompare(b.nom));
+    if(filterText){
+      const f = filterText.toLowerCase();
+      list = list.filter(p=> p.nom.toLowerCase().includes(f) || (p.categorie||'').toLowerCase().includes(f));
+    }
+    const listEl = document.getElementById('orderProductsList');
+    if(!list.length){
+      listEl.innerHTML = '<div class="empty">Aucun produit disponible pour ce client. Ajoutez-en depuis l\'onglet Catalogue.</div>';
+    }else{
+      listEl.innerHTML = list.map(p=>{
+        const qty = cart[p.id] || 0;
+        return `
+        <div class="product-row">
+          <div class="top">
+            <img class="prod-thumb" data-photo-id="${p.id}" src="${photoCache[p.id]||PLACEHOLDER}" alt="">
+            <div>
+              <div class="name">${escapeHtml(p.nom)}</div>
+              <div class="price">${p.prix!=null? fmt(p.prix):'prix n/c'} / ${escapeHtml(p.unite||'unité')}</div>
+            </div>
+          </div>
+          <div class="qty-control">
+            <button onclick="SOK.changeQty('${p.id}', -1)">−</button>
+            <input type="number" min="0" value="${qty}" onchange="SOK.setQty('${p.id}', this.value)">
+            <button onclick="SOK.changeQty('${p.id}', 1)">+</button>
+          </div>
+        </div>`;
+      }).join('');
+      loadThumbnails(list);
+    }
+    renderCustomItemsList();
+    updateCartBar();
+  }
+
+  function renderCustomItemsList(){
+    const el = document.getElementById('customProductsList');
+    if(!customItems.length){ el.innerHTML = ''; return; }
+    el.innerHTML = customItems.map(ci=>`
+      <div class="list-item">
+        <div>
+          <div class="name">${escapeHtml(ci.nom)} <span class="tag">Hors catalogue</span></div>
+          <div class="meta">Quantité : ${ci.qty} · prix à confirmer</div>
+        </div>
+        <button class="icon-btn" title="Retirer" onclick="SOK.removeCustomItem('${ci.id}')">🗑️</button>
+      </div>`).join('');
+  }
+
+  document.getElementById('customProductAddBtn').addEventListener('click', ()=>{
+    const nom = document.getElementById('customProductNom').value.trim();
+    const qty = Math.max(1, parseInt(document.getElementById('customProductQty').value)||1);
+    if(!nom){ showToast('Indique le nom du produit'); return; }
+    customItems.push({ id: uid(), nom, qty });
+    document.getElementById('customProductNom').value = '';
+    document.getElementById('customProductQty').value = 1;
+    renderCustomItemsList();
+    updateCartBar();
+    showToast('Produit ajouté à la commande');
+  });
+
+  SOK.removeCustomItem = function(id){
+    customItems = customItems.filter(ci=>ci.id!==id);
+    renderCustomItemsList();
+    updateCartBar();
+  };
+
+  SOK.changeQty = function(productId, delta){
+    const current = cart[productId] || 0;
+    const next = Math.max(0, current + delta);
+    if(next === 0) delete cart[productId]; else cart[productId] = next;
+    renderOrderView(document.getElementById('orderSearch').value);
+  };
+  SOK.setQty = function(productId, val){
+    const n = Math.max(0, parseInt(val)||0);
+    if(n === 0) delete cart[productId]; else cart[productId] = n;
+    renderOrderView(document.getElementById('orderSearch').value);
+  };
+
+  function updateCartBar(){
+    const cartBar = document.getElementById('cartBar');
+    const ids = Object.keys(cart);
+    const hasCustom = customItems.length > 0;
+    if(!currentOrderClientId || (!ids.length && !hasCustom)){
+      cartBar.style.display = currentOrderClientId ? 'flex' : 'none';
+      document.getElementById('cartCount').textContent = '0 article';
+      document.getElementById('cartTotal').textContent = fmt(0);
+      document.getElementById('validateOrderBtn').disabled = true;
+      return;
+    }
+    cartBar.style.display = 'flex';
+    const client = clients.find(c=>c.id===currentOrderClientId);
+    const remisePct = (client && client.remise) || 0;
+    let subtotal = 0, count = 0;
+    ids.forEach(id=>{
+      const p = products.find(x=>x.id===id);
+      if(!p) return;
+      count += cart[id];
+      subtotal += (p.prix||0) * cart[id];
+    });
+    const customCount = customItems.reduce((s,ci)=> s+ci.qty, 0);
+    count += customCount;
+    const total = subtotal * (1 - remisePct/100);
+    let countLabel = count + (count>1? ' articles' : ' article') + (remisePct? ` · -${remisePct}%` : '');
+    if(customCount) countLabel += ` · ${customCount} à confirmer`;
+    document.getElementById('cartCount').textContent = countLabel;
+    document.getElementById('cartTotal').textContent = fmt(total);
+    document.getElementById('validateOrderBtn').disabled = false;
+  }
+
+  document.getElementById('orderSearch').addEventListener('input', (e)=> renderOrderView(e.target.value));
+
+  document.getElementById('validateOrderBtn').addEventListener('click', async ()=>{
+    const ids = Object.keys(cart);
+    if(!currentOrderClientId || (!ids.length && !customItems.length)) return;
+    const client = clients.find(c=>c.id===currentOrderClientId);
+    const remisePct = (client && client.remise) || 0;
+    let subtotal = 0;
+    const items = ids.map(id=>{
+      const p = products.find(x=>x.id===id);
+      const qty = cart[id];
+      const lineTotal = (p.prix||0)*qty;
+      subtotal += lineTotal;
+      return { productId: id, nom: p.nom, prix: p.prix, unite: p.unite, qty };
+    });
+    customItems.forEach(ci=>{
+      items.push({ productId: null, nom: ci.nom, prix: null, unite: '', qty: ci.qty, horsCatalogue: true });
+    });
+    const total = subtotal * (1 - remisePct/100);
+    const order = {
+      id: uid(),
+      clientId: currentOrderClientId,
+      date: new Date().toISOString(),
+      items,
+      subtotal,
+      remisePct,
+      total,
+      statut: 'en_attente',
+      notes: document.getElementById('orderNotes').value.trim()
+    };
+    orders.push(order);
+    await saveOrders();
+    cart = {};
+    customItems = [];
+    document.getElementById('orderNotes').value = '';
+    renderOrderView();
+    renderHistorique();
+    showToast('Commande enregistrée');
+  });
+
+  document.getElementById('histClientSelect').addEventListener('change', renderHistorique);
+  document.getElementById('histStatusSelect').addEventListener('change', renderHistorique);
+
+  const STATUT_LABELS = { en_attente:'En attente', livree:'Livrée', facturee:'Facturée' };
+  let editingOrderId = null;
+
+  function renderHistorique(){
+    const isClientSession = session && session.type === 'client';
+    const filterId = isClientSession ? session.clientId : document.getElementById('histClientSelect').value;
+    const filterStatus = isClientSession ? '' : document.getElementById('histStatusSelect').value;
+    let list = orders.slice().sort((a,b)=> b.date.localeCompare(a.date));
+    if(filterId) list = list.filter(o=>o.clientId===filterId);
+    if(filterStatus) list = list.filter(o=> (o.statut||'en_attente')===filterStatus);
+    const el = document.getElementById('historiqueList');
+    if(!list.length){ el.innerHTML = '<div class="empty">Aucune commande enregistrée.</div>'; return; }
+    el.innerHTML = list.map(o=>{
+      const client = clients.find(c=>c.id===o.clientId);
+      const statut = o.statut || 'en_attente';
+      const isEditing = !isClientSession && editingOrderId === o.id;
+
+      let bodyHtml;
+      if(isEditing){
+        const rows = o.items.map((it,idx)=>`
+          <div class="edit-item-row">
+            <div class="edit-item-name">${escapeHtml(it.nom)}${it.horsCatalogue? ' <span class="tag">hors catalogue</span>':''}</div>
+            <div class="row">
+              <div>
+                <label>Quantité</label>
+                <input type="number" min="0" step="1" value="${it.qty}" data-edit-qty="${idx}">
+              </div>
+              <div>
+                <label>Prix unitaire HTVA (€)</label>
+                <input type="number" min="0" step="0.01" value="${it.prix!=null? it.prix : ''}" placeholder="—" data-edit-prix="${idx}">
+              </div>
+            </div>
+            <button class="icon-btn" title="Retirer cette ligne" data-edit-remove="${idx}" onclick="SOK.toggleRemoveLine(this)">🗑️ Retirer cette ligne</button>
+          </div>`).join('');
+        bodyHtml = `
+          <div class="edit-order-form" data-order-id="${o.id}">
+            ${rows}
+            <label style="margin-top:10px;">Notes de livraison</label>
+            <textarea data-edit-notes>${escapeHtml(o.notes||'')}</textarea>
+            <div class="row" style="margin-top:10px;">
+              <button class="btn btn-outline" onclick="SOK.cancelEditOrder()">Annuler</button>
+              <button class="btn btn-primary" onclick="SOK.saveEditOrder('${o.id}')">Enregistrer les modifications</button>
+            </div>
+          </div>`;
+      }else{
+        const itemsHtml = o.items.map(it=>`<div class="line"><span>${escapeHtml(it.nom)} × ${it.qty}${it.horsCatalogue? ' <span class="tag">hors catalogue</span>':''}</span><span>${it.prix!=null? fmt(it.prix*it.qty):'—'}</span></div>`).join('');
+        const remiseLine = o.remisePct ? `<div class="line"><span>Remise appliquée</span><span>-${o.remisePct}%</span></div>` : '';
+        const notesHtml = o.notes ? `<div class="helper" style="margin-top:6px;"><b>Notes :</b> ${escapeHtml(o.notes)}</div>` : '';
+        const statusBlock = isClientSession ? '' : `
+          <label style="margin-top:10px;">Statut de la commande</label>
+          <select class="status-select" onchange="SOK.setStatus('${o.id}', this.value)">
+            <option value="en_attente" ${statut==='en_attente'?'selected':''}>En attente</option>
+            <option value="livree" ${statut==='livree'?'selected':''}>Livrée</option>
+            <option value="facturee" ${statut==='facturee'?'selected':''}>Facturée</option>
+          </select>`;
+        const adminButtons = isClientSession ? '' : `
+          <div class="row" style="margin-top:8px;">
+            <button class="btn btn-outline" onclick="SOK.startEditOrder('${o.id}')">✏️ Modifier cette commande</button>
+            <button class="btn btn-danger" onclick="SOK.deleteOrder('${o.id}')">🗑️ Supprimer</button>
+          </div>`;
+        bodyHtml = `
+          ${itemsHtml}
+          ${remiseLine}
+          ${notesHtml}
+          ${statusBlock}
+          <div class="row" style="margin-top:10px;">
+            <button class="btn btn-amber" onclick="SOK.reorder('${o.id}')">Recommander</button>
+            <button class="btn btn-dark" onclick="SOK.printOrder('${o.id}')">🖨️ Bon de commande</button>
+            <button class="btn btn-outline" onclick="SOK.exportOrderCSV('${o.id}')">📊 Export Compta Cegid</button>
+          </div>
+          ${adminButtons}`;
+      }
+
+      return `
+      <div class="hist-order ${isEditing? 'open':''}" data-id="${o.id}">
+        <div class="head" onclick="SOK.toggleOrder('${o.id}')">
+          <div>
+            <div class="date">${escapeHtml(client? client.nom : 'Client supprimé')}<span class="status-badge status-${statut}">${STATUT_LABELS[statut]}</span></div>
+            <div class="meta">${formatDate(o.date)}</div>
+          </div>
+          <div class="amt">${fmt(o.total)}</div>
+        </div>
+        <div class="details">
+          ${bodyHtml}
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  SOK.startEditOrder = function(id){
+    editingOrderId = id;
+    renderHistorique();
+  };
+
+  SOK.cancelEditOrder = function(){
+    editingOrderId = null;
+    renderHistorique();
+  };
+
+  SOK.toggleRemoveLine = function(btn){
+    const row = btn.closest('.edit-item-row');
+    const removed = btn.dataset.removed === '1';
+    if(removed){
+      btn.dataset.removed = '';
+      row.style.opacity = '1';
+      row.querySelectorAll('input').forEach(inp=> inp.disabled = false);
+      btn.textContent = '🗑️ Retirer cette ligne';
+    }else{
+      btn.dataset.removed = '1';
+      row.style.opacity = '.4';
+      row.querySelectorAll('input').forEach(inp=> inp.disabled = true);
+      btn.textContent = '↩️ Annuler le retrait';
+    }
+  };
+
+  SOK.saveEditOrder = async function(id){
+    const o = orders.find(x=>x.id===id);
+    if(!o) return;
+    const form = document.querySelector(`.edit-order-form[data-order-id="${id}"]`);
+    if(!form) return;
+    const newItems = [];
+    o.items.forEach((it, idx)=>{
+      const removeBtn = form.querySelector(`[data-edit-remove="${idx}"]`);
+      if(removeBtn && removeBtn.dataset.removed === '1') return;
+      const qtyInput = form.querySelector(`[data-edit-qty="${idx}"]`);
+      const prixInput = form.querySelector(`[data-edit-prix="${idx}"]`);
+      const qty = Math.max(0, parseInt(qtyInput.value)||0);
+      if(qty <= 0) return;
+      const prixRaw = prixInput.value.trim();
+      const prix = prixRaw === '' ? null : parseFloat(prixRaw);
+      newItems.push({ ...it, qty, prix });
+    });
+    const subtotal = newItems.reduce((s,it)=> s + (it.prix||0)*it.qty, 0);
+    const total = subtotal * (1 - (o.remisePct||0)/100);
+    o.items = newItems;
+    o.subtotal = subtotal;
+    o.total = total;
+    o.notes = form.querySelector('[data-edit-notes]').value.trim();
+    await saveOrders();
+    editingOrderId = null;
+    renderHistorique();
+    showToast('Commande modifiée');
+  };
+
+  SOK.setStatus = async function(id, value){
+    const o = orders.find(x=>x.id===id);
+    if(!o) return;
+    o.statut = value;
+    await saveOrders();
+    renderHistorique();
+    showToast('Statut mis à jour');
+  };
+
+  SOK.toggleOrder = function(id){
+    if(editingOrderId === id) return;
+    const el = document.querySelector(`.hist-order[data-id="${id}"]`);
+    if(el) el.classList.toggle('open');
+  };
+
+  SOK.deleteOrder = async function(id){
+    if(!(await confirmModal('Supprimer définitivement cette commande de l\'historique ?'))) return;
+    orders = orders.filter(x=>x.id!==id);
+    await saveOrders();
+    renderHistorique();
+    showToast('Commande supprimée');
+  };
+
+  SOK.reorder = function(id){
+    const o = orders.find(x=>x.id===id);
+    if(!o) return;
+    currentOrderClientId = o.clientId;
+    cart = {};
+    customItems = [];
+    o.items.forEach(it=>{
+      if(it.horsCatalogue){ customItems.push({ id: uid(), nom: it.nom, qty: it.qty }); }
+      else{ cart[it.productId] = it.qty; }
+    });
+    document.getElementById('orderClientSelect').value = o.clientId;
+    document.querySelector('nav.tabs button[data-view=commande]').click();
+    renderOrderView();
+    showToast('Commande rechargée dans le panier');
+  };
+
+  SOK.exportOrderCSV = function(id){
+    const order = orders.find(o => o.id === id);
+    if(!order) return;
+    const client = clients.find(c => c.id === order.clientId);
+    
+    let csvContent = "data:text/csv;charset=utf-8,\uFEFF";
+    csvContent += "Numero Commande;Date;Client;N° TVA Client;Designation;Quantite;Prix Unitaire HT;Total HT\r\n";
+    
+    const numero = 'CMD-' + order.id.slice(-6).toUpperCase();
+    const dateStr = new Date(order.date).toLocaleDateString('fr-BE');
+    const clientNom = client ? client.nom.replace(/;/g, ',') : '';
+    const clientTva = client ? (client.tva || '') : '';
+
+    order.items.forEach(it => {
+      const prix = it.prix != null ? it.prix.toFixed(2).replace('.', ',') : '0,00';
+      const totalHt = it.prix != null ? (it.prix * it.qty).toFixed(2).replace('.', ',') : '0,00';
+      const designation = it.nom.replace(/;/g, ',');
+      
+      csvContent += `"${numero}","${dateStr}","${clientNom}","${clientTva}","${designation}",${it.qty},"${prix}","${totalHt}"\r\n`;
+    });
+
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `export_cegid_${numero}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    showToast("Export CSV généré pour Cegid");
+  };
+
+  function buildPrintContent(order){
+    const client = clients.find(c=>c.id===order.clientId);
+    const rate = (company.tvaRate!=null ? company.tvaRate : 21) / 100;
+    const subtotal = order.subtotal!=null ? order.subtotal : order.total;
+    const remisePct = order.remisePct || 0;
+    const totalHtva = order.total;
+    const tvaAmount = totalHtva * rate;
+    const totalTtc = totalHtva + tvaAmount;
+    const numero = 'CMD-' + order.id.slice(-6).toUpperCase();
+    const rows = order.items.map(it=>{
+      const lineTotal = (it.prix||0) * it.qty;
+      return `<tr>
+        <td>${escapeHtml(it.nom)}</td>
+        <td class="num">${it.qty}</td>
+        <td class="num">${it.prix!=null? fmt(it.prix):'—'}</td>
+        <td class="num">${it.prix!=null? fmt(lineTotal):'—'}</td>
+      </tr>`;
+    }).join('');
+    const remiseRow = remisePct ? `<div class="line"><span>Sous-total HTVA</span><span>${fmt(subtotal)}</span></div>
+        <div class="line"><span>Remise (${remisePct}%)</span><span>-${fmt(subtotal - totalHtva)}</span></div>` : '';
+    return `
+      <div class="doc-header">
+        <div class="doc-logo">
+          <div class="mark">SAM_O_KA_Srl</div>
+          <div class="doc-company">
+            <b>${escapeHtml(company.nom||'')}</b><br>
+            ${escapeHtml(company.adresse||'').replace(/\n/g,'<br>')}<br>
+            ${company.tva? 'TVA : '+escapeHtml(company.tva)+'<br>':''}
+            ${company.tel? 'Tél : '+escapeHtml(company.tel)+' ':''}${company.email? '· '+escapeHtml(company.email):''}
+          </div>
+        </div>
+        <div class="doc-meta">
+          <div class="doc-title">BON DE COMMANDE</div>
+          N° ${numero}<br>
+          Le ${formatDate(order.date)}
+        </div>
+      </div>
+      <div class="doc-client">
+        <b>Client</b>
+        ${escapeHtml(client? client.nom : 'Client supprimé')}<br>
+        ${client? escapeHtml(client.adresse||'').replace(/\n/g,'<br>') : ''}
+        ${client && client.tel? '<br>Tél : '+escapeHtml(client.tel) : ''}
+      </div>
+      <table class="doc-table">
+        <thead>
+          <tr>
+            <th>Produit</th>
+            <th class="num">Qté</th>
+            <th class="num">PU HTVA</th>
+            <th class="num">Total HTVA</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+      <div class="doc-totals">
+        ${remiseRow}
+        <div class="line"><span>Total HTVA</span><span>${fmt(totalHtva)}</span></div>
+        <div class="line"><span>TVA (${(rate*100).toFixed(1).replace(/\.0$/,'')}%)</span><span>${fmt(tvaAmount)}</span></div>
+        <div class="line grand"><span>Total TTC</span><span>${fmt(totalTtc)}</span></div>
+      </div>
+      ${order.notes? `<div class="doc-client" style="margin-top:14px;"><b>Notes de livraison</b>${escapeHtml(order.notes)}</div>` : ''}
+      <div class="doc-footer">
+        ${escapeHtml(company.nom||'')}${company.tva? ' · TVA '+escapeHtml(company.tva):''} — Document généré automatiquement, sans valeur de facture.
+      </div>
+    `;
+  }
+
+  SOK.printOrder = function(orderId){
+    const order = orders.find(o=>o.id===orderId);
+    if(!order) return;
+    document.getElementById('printContent').innerHTML = buildPrintContent(order);
+    window.print();
+  };
+
+  function escapeHtml(s){
+    return String(s||'').replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  }
+  function formatDate(iso){
+    const d = new Date(iso);
+    return d.toLocaleDateString('fr-BE', {day:'2-digit', month:'2-digit', year:'numeric'}) + ' à ' + d.toLocaleTimeString('fr-BE', {hour:'2-digit', minute:'2-digit'});
+  }
+
+  function renderAll(){
+    renderClientSelects();
+    renderClientsList();
+    renderProductsList();
+    renderOrderView();
+    renderHistorique();
+    renderCompanyForm();
+  }
+
+  loadAll();
+})();
+
+if('serviceWorker' in navigator){
+  window.addEventListener('load', ()=>{
+    navigator.serviceWorker.register('sw.js').catch(()=>{});
+  });
+}
+</script>
+
+</body>
+</html>
